@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import lock from "./assets/lock.png";
+import unlock from "./assets/unlock.png";
 
 const MAFIA_COUNT = 2;
 const SHERIFF_COUNT = 1;
@@ -45,7 +47,10 @@ export default function App() {
     const shuffledPlayers = [...players];
     for (let i = players.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [shuffledPlayers[i], shuffledPlayers[j]] = [shuffledPlayers[j], shuffledPlayers[i]];
+      [shuffledPlayers[i], shuffledPlayers[j]] = [
+        shuffledPlayers[j],
+        shuffledPlayers[i],
+      ];
     }
 
     const updatedPlayers = shuffledPlayers.map((player, index) => {
@@ -61,89 +66,87 @@ export default function App() {
     setPlayers(updatedPlayers.sort((a, b) => a.id - b.id));
   };
   return (
-    <div className="select-none px-20 flex flex-col items-center">
-      <div className="md:relative w-full flex flex-col justify-center items-center gap-4">
-        <div className="md:absolute top-0 left-0 z-10">
-          <label htmlFor="lock">Заблокувати</label>
-          <input
-            type="checkbox"
-            id="lock"
-            className="h-4 w-4 ml-2"
-            onChange={() => setLocked((prev) => !prev)}
-          />
-        </div>
-
+    <div className="select-none px-8 flex flex-col items-center ">
+      <div className="sm:relative w-full flex justify-center items-start gap-4">
+        <img
+          src={locked ? lock : unlock}
+          className="sm:absolute top-0 left-0 z-10 w-8 h-8 cursor-pointer"
+          onClick={() => setLocked((prev) => !prev)}
+        />
         <div
-          className={`flex flex-col justify-center relative items-center gap-4 w-full ${
+          className={`flex text-lg sm:text-2xl justify-center items-start gap-8 w-full ${
             locked && "pointer-events-none"
           } ${locked && "opacity-20"}`}
         >
-          <div className="flex gap-4">
-            Лікар:
+          <div className="flex flex-col gap-2">
             <div className="flex gap-4">
-              <div className="flex gap-1">
-                <input
-                  type="radio"
-                  checked={likar}
-                  onChange={() => setLikar((prev) => !prev)}
-                  id="eLikar"
-                />
-                <label htmlFor="eLikar">Є</label>
+              Лікар:
+              <div className="flex gap-4">
+                <div className="flex gap-1">
+                  <input
+                    type="radio"
+                    checked={likar}
+                    onChange={() => setLikar((prev) => !prev)}
+                    id="eLikar"
+                  />
+                  <label htmlFor="eLikar">Є</label>
+                </div>
+                <div className="flex gap-1">
+                  <input
+                    type="radio"
+                    checked={!likar}
+                    onChange={() => setLikar((prev) => !prev)}
+                    id="nemaLikar"
+                  />
+                  <label htmlFor="nemaLikar">Нема</label>
+                </div>
               </div>
+            </div>
+            <div className="flex gap-4">
+              <span>Гравців:</span>
               <div className="flex gap-1">
-                <input
-                  type="radio"
-                  checked={!likar}
-                  onChange={() => setLikar((prev) => !prev)}
-                  id="nemaLikar"
-                />
-                <label htmlFor="nemaLikar">Нема</label>
+                <button
+                  className="cursor-pointer"
+                  onClick={removePlayer}
+                  disabled={players.length == 1}
+                >
+                  -
+                </button>
+                <span>{players.length}</span>
+                <button className="cursor-pointer" onClick={addPlayer}>
+                  +
+                </button>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <span>К-сть мафії: </span>
+              <div className="flex gap-1">
+                <button
+                  className="cursor-pointer"
+                  onClick={() => setMafia((prev) => prev - 1)}
+                  disabled={mafia == 1}
+                >
+                  -
+                </button>
+                <span>{mafia}</span>
+                <button
+                  className="cursor-pointer"
+                  onClick={() => setMafia((prev) => prev + 1)}
+                >
+                  +
+                </button>
               </div>
             </div>
           </div>
-          <div className="flex gap-4">
-            <span>Гравців:</span>
-            <div className="flex gap-1">
-              <button
-                className="cursor-pointer"
-                onClick={removePlayer}
-                disabled={players.length == 1}
-              >
-                -
-              </button>
-              <span>{players.length}</span>
-              <button className="cursor-pointer" onClick={addPlayer}>
-                +
-              </button>
-            </div>
+
+          <div className="flex flex-col gap-2">
+            <button onClick={assignRoles} className="cursor-pointer">
+              Роздати ролі
+            </button>
+            <button onClick={resetRoles} className="cursor-pointer">
+              Скинути ролі
+            </button>
           </div>
-          <div className="flex gap-4">
-            <span>К-сть мафії: </span>
-            <div className="flex gap-1">
-              <button
-                className="cursor-pointer"
-                onClick={() => setMafia((prev) => prev - 1)}
-                disabled={mafia == 1}
-              >
-                -
-              </button>
-              <span>{mafia}</span>
-              <button
-                className="cursor-pointer"
-                onClick={() => setMafia((prev) => prev + 1)}
-              >
-                +
-              </button>
-            </div>
-          </div>
-          {/* <span>Sheriff: {SHERIFF_COUNT}</span>
-      <span>Doctor: {DOCTOR_COUNT}</span> */}
-          <button onClick={assignRoles} className="cursor-pointer">
-            Роздати ролі
-          </button>
-          <button onClick={resetRoles} className="cursor-pointer">
-            Скинути ролі
-          </button>
         </div>
       </div>
 
